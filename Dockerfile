@@ -1,5 +1,5 @@
 FROM phusion/baseimage:0.9.15
-MAINTAINER Nathan Hopkins <natehop@gmail.com>
+MAINTAINER Daan Debie <debie.daan@gmail.com>
 
 #RUN echo deb http://archive.ubuntu.com/ubuntu $(lsb_release -cs) main universe > /etc/apt/sources.list.d/universe.list
 RUN apt-get -y update\
@@ -71,12 +71,21 @@ ADD daemons/graphite.sh /etc/service/graphite/run
 ADD daemons/statsd.sh /etc/service/statsd/run
 ADD daemons/nginx.sh /etc/service/nginx/run
 
+# rename the storage directory to storage_orig in the image
+# it will be renamed back in entrypoint.sh when a container starts for the first time
+WORKDIR /opt/graphite
+RUN mv storage storage_orig
+
+# entrypoint
+ENV HOME /root
+ADD scripts/entrypoint.sh /root/
+
 # cleanup
 RUN apt-get clean\
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # defaults
-EXPOSE 80:80 2003:2003 8125:8125/udp
-VOLUME ["/opt/graphite", "/etc/nginx", "/opt/statsd", "/etc/logrotate.d", "/var/log"]
-ENV HOME /root
-CMD ["/sbin/my_init"]
+EXPOSE 80 2003 8125/udp
+VOLUME ["/etc/nginx", "/etc/logrotate.d", "/opt/statsd", "/opt/graphite/conf", "/opt/graphite/storage", "/var/log"]
+ENTRYPOINT ["/root/entrypoint.sh"]
+CMD ["my_init"]
