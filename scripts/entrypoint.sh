@@ -16,6 +16,8 @@ fi
 # ensure log directories
 mkdir -p /var/log/carbon /var/log/graphite /var/log/nginx /var/log/statsd
 
+/usr/local/bin/django_admin_init.exp
+
 if [ "$1" == "my_init" ]; then
   /sbin/my_init
 fi

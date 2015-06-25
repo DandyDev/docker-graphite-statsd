@@ -147,16 +147,19 @@
 # The default is 'django.db.backends.sqlite3' with file 'graphite.db'
 # located in STORAGE_DIR
 #
-#DATABASES = {
-#    'default': {
-#        'NAME': '/opt/graphite/storage/graphite.db',
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'USER': '',
-#        'PASSWORD': '',
-#        'HOST': '',
-#        'PORT': ''
-#    }
-#}
+DATABASES = {
+    'default': {
+        # You can swap out the engine for MySQL easily by changing this value
+        # to ``django.db.backends.mysql`` or to PostgreSQL with
+        # ``django.db.backends.postgresql_psycopg2``
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'graphite',
+        'USER': 'graphite',
+        'PASSWORD': 'graphite',
+        'HOST': 'graphitedb',
+        'PORT': '',
+    }
+}
 #
 
 

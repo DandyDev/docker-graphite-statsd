@@ -1,32 +1,39 @@
-FROM phusion/baseimage:0.9.15
+FROM phusion/baseimage:0.9.16
 MAINTAINER Daan Debie <debie.daan@gmail.com>
 
 #RUN echo deb http://archive.ubuntu.com/ubuntu $(lsb_release -cs) main universe > /etc/apt/sources.list.d/universe.list
-RUN apt-get -y update\
+RUN apt-get -y update \
  && apt-get -y upgrade
 
 # dependencies
-RUN apt-get -y --force-yes install vim\
- nginx\
- python-dev\
- python-flup\
- python-pip\
- expect\
- git\
- memcached\
- sqlite3\
- libcairo2\
- libcairo2-dev\
- python-cairo\
- pkg-config\
- nodejs
+RUN apt-get -y --force-yes install vim \
+ nginx \
+ python-dev \
+ python-flup \
+ python-setuptools \
+ libffi-dev \
+ libssl-dev \
+ expect \
+ git \
+ memcached \
+ sqlite3 \
+ libcairo2 \
+ libcairo2-dev \
+ python-cairo \
+ pkg-config \
+ nodejs \
+ libpq-dev
+
+RUN easy_install -U pyopenssl ndg-httpsclient pyasn1 pip
 
 # python dependencies
-RUN pip install django==1.3\
- python-memcached==1.53\
- django-tagging==0.3.1\
- twisted==11.1.0\
- txAMQP==0.6.2
+RUN pip install django==1.3 \
+ python-memcached==1.54 \
+ django-tagging==0.3.1 \
+ twisted==11.1.0 \
+ txAMQP==0.6.2 \
+ psycopg2
+
 
 # install graphite
 RUN git clone -b 0.9.12 https://github.com/graphite-project/graphite-web.git /usr/local/src/graphite-web
@@ -57,7 +64,6 @@ RUN ln -s /etc/nginx/sites-available/graphite.conf /etc/nginx/sites-enabled/grap
 
 # init django admin
 ADD scripts/django_admin_init.exp /usr/local/bin/django_admin_init.exp
-RUN /usr/local/bin/django_admin_init.exp
 
 # logging support
 RUN mkdir -p /var/log/carbon /var/log/graphite /var/log/nginx
@@ -81,7 +87,7 @@ ENV HOME /root
 ADD scripts/entrypoint.sh /root/
 
 # cleanup
-RUN apt-get clean\
+RUN apt-get clean \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # defaults
